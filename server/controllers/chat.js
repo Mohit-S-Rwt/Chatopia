@@ -14,11 +14,7 @@ import { getOtherMembers } from "../lib/helper.js";
 
 const newGroupChat = tryCatch(async (req, res, next) => {
   const { name, members } = req.body;
-  if (members.length < 2) {
-    return next(
-      new ErrorHandler("Group chat must have atleast 3 members", 400)
-    );
-  }
+  
 
   const allMembers = [...members, req.user];
 
@@ -95,10 +91,7 @@ const addMembers = tryCatch(async (req, res, next) => {
   const { chatId, members } = req.body;
   console.log(members);
 
-  if (!members || members.length < 1) {
-    return next(new ErrorHandler("Please provide members", 400));
-  }
-
+  
   const chat = await Chat.findById(chatId);
 
   if (!chat) return next(new ErrorHandler("Chat not found", 404));

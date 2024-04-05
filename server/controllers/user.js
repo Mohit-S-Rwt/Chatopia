@@ -3,6 +3,7 @@ import { User } from "../models/user.js";
 import { cookieOptions, sendToken } from "../utils/features.js";
 import { tryCatch } from "../middlewares/error.js";
 import { ErrorHandler } from "../utils/utility.js";
+import { Chat } from "../models/chat.js";
 
 // create a new user and save it to database and save it in cookie
 const newUser = async (req, res, next) => {
@@ -44,9 +45,9 @@ const login = tryCatch(async (req, res, next) => {
   sendToken(res, user, 200, `${user.name} Logged in successfully`);
 });
 
-const getMyPofile = tryCatch(async (req, res,next) => {
+const getMyPofile = tryCatch(async (req, res, next) => {
   const user = await User.findById(req.user);
-  if(!user) return next(new ErrorHandler("User not Found",404))
+  if (!user) return next(new ErrorHandler("User not Found", 404));
 
   res.status(200).json({
     success: true,
@@ -64,18 +65,32 @@ const logout = tryCatch(async (req, res) => {
     });
 });
 
-
 const searchUser = tryCatch(async (req, res) => {
-const {name} = req.query;
+  const { name= " " } = req.query;
 
+  // Finding All the chats
 
-  return res
-    .status(200)
-    .cookie("chattu-token", "", { ...cookieOptions, maxAge: 0 })
-    .json({
-      success: true,
-      message: name,
-    });
+  const myChats = await Chat.find({ groupChat: false, members: req.user });
+
+  //extracting All users from my chats that means friends
+  const allUsersFromMyChats = myChats.flatMap((chat) => chat.members);
+
+// finding all users except me and my friends
+  const allUserExceptMeAndFriends = await User.find({
+    _id: { $nin: allUsersFromMyChats },
+    name:{$regex : name, $options: "i"},
+  });
+
+  const users = allUserExceptMeAndFriends.map(({_id, name,avatar}) => ({
+    _id,
+    name,
+    avatar: avatar.url,
+  }));
+
+  return res.status(200).json({
+    success: true,
+    users,
+  });
 });
 
 export { login, newUser, getMyPofile, logout, searchUser };
