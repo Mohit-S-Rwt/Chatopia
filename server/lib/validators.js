@@ -52,7 +52,6 @@ const removeMemberValidator = () => [
   body("userId", "Please Enter User Id").notEmpty(),
 ];
 
-
 const sendAttachmentsValidator = () => [
   body("chatId", "Please Enter Chat Id").notEmpty(),
   check("files")
@@ -62,20 +61,24 @@ const sendAttachmentsValidator = () => [
     .withMessage("Attachments must be between 1 - 5"),
 ];
 
-const chatIdValidator = () => [
-    param("id", "Please Enter Chat Id").notEmpty(),
-   
-  ];
+const chatIdValidator = () => [param("id", "Please Enter Chat Id").notEmpty()];
 
-  const renameValidator = () => [
-    param("id", "Please Enter Chat Id").notEmpty(),
-    body("name", "Please Enter New Name").notEmpty(),
-   
-  ];
+const renameValidator = () => [
+  param("id", "Please Enter Chat Id").notEmpty(),
+  body("name", "Please Enter New Name").notEmpty(),
+];
 
- 
+const sendRequestValidator = () => [
+  body("userId", "Please Enter User Id ").notEmpty(),
+];
 
-  
+const acceptRequestValidator = () => [
+  body("requestId", "Please Enter request Id ").notEmpty(),
+  body("accept", "Please Add Accept ")
+    .notEmpty().withMessage("Please Add Accept ")
+    .isBoolean()
+    .withMessage("Accept must be A boolean"),
+];
 
 export {
   registerValidator,
@@ -86,5 +89,7 @@ export {
   removeMemberValidator,
   sendAttachmentsValidator,
   chatIdValidator,
-  renameValidator
+  renameValidator,
+  sendRequestValidator,
+  acceptRequestValidator,
 };
