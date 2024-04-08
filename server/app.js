@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 
 import userRoutes from "./routes/user.js";
 import chatRoutes from "./routes/chat.js";
+import  adminRoute from "./routes/admin.js"
 // import {  createUser } from "./seeders/user.js";
 // import { createGroupChats, createMessages, createMessagesInAChat, createSingleChats } from "./seeders/chat.js";
 
@@ -32,6 +33,7 @@ app.use(cookieParser()) // to access the cookie of the logged in user
 
 app.use("/user", userRoutes);
 app.use("/chat", chatRoutes);
+app.use("/admin", adminRoute);
 
 
 app.get("/", (req, res) => {
