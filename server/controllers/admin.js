@@ -5,13 +5,12 @@ import { Message } from "../models/message.js";
 import { User } from "../models/user.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { cookieOptions } from "../utils/features.js";
-// import { adminSecretKey } from "../app.js";
+import { adminSecretKey } from "../app.js";
 
 const adminLogin = tryCatch(async (req, res, next) => {
   const { secretKey } = req.body;
-console.log(secretKey)
+// console.log(secretKey)
 
-const adminSecretKey = process.env.ADMIN_SECRET_KEY || "mohit"
 
   const isMatched = secretKey === adminSecretKey;
 

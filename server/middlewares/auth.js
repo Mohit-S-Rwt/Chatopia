@@ -1,6 +1,7 @@
 import { ErrorHandler } from "../utils/utility.js";
 import jwt from "jsonwebtoken";
 import { tryCatch } from "./error.js";
+import { adminSecretKey } from "../app.js";
 
 const isAuthenticated = tryCatch((req, res, next) => {
   const token = req.cookies["chattu-token"];
@@ -31,4 +32,4 @@ const adminOnly = (req, res, next) => {
 };
 
 
-export { isAuthenticated };
+export { isAuthenticated,adminOnly };

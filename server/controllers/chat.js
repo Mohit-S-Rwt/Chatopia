@@ -14,7 +14,6 @@ import { getOtherMembers } from "../lib/helper.js";
 
 const newGroupChat = tryCatch(async (req, res, next) => {
   const { name, members } = req.body;
-  
 
   const allMembers = [...members, req.user];
 
@@ -91,7 +90,6 @@ const addMembers = tryCatch(async (req, res, next) => {
   const { chatId, members } = req.body;
   console.log(members);
 
-  
   const chat = await Chat.findById(chatId);
 
   if (!chat) return next(new ErrorHandler("Chat not found", 404));
@@ -219,6 +217,12 @@ const leaveGroup = tryCatch(async (req, res, next) => {
 
 const sendAttachments = tryCatch(async (req, res, next) => {
   const { chatId } = req.body;
+
+  const files = req.files || [];
+
+  if(files.length<1) return next(new ErrorHandler("Please upload Attachments",400)) ;
+if(files.length>5) return next(new ErrorHandler("Files can not be more than 5 ",400))
+
   const [chat, me] = await Promise.all([
     Chat.findById(chatId),
     User.findById(req.user, "name"),
@@ -226,7 +230,6 @@ const sendAttachments = tryCatch(async (req, res, next) => {
 
   if (!chat) return next(new ErrorHandler("Chat not found", 404));
 
-  const files = req.files || [];
   if (files.length < 1)
     return next(new ErrorHandler("Please provide attachments"), 400);
 
@@ -383,9 +386,10 @@ const getMessages = tryCatch(async (req, res, next) => {
       .skip(skip)
       .limit(result_per_page)
       .populate("sender", "name")
-      .lean(), Message.countDocuments({chat:chatId}),
+      .lean(),
+    Message.countDocuments({ chat: chatId }),
   ]);
-  const totalPages = Math.ceil(totalMessagesCount/result_per_page);
+  const totalPages = Math.ceil(totalMessagesCount / result_per_page);
 
   return res.status(200).json({
     success: true,
