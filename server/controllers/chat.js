@@ -220,8 +220,10 @@ const sendAttachments = tryCatch(async (req, res, next) => {
 
   const files = req.files || [];
 
-  if(files.length<1) return next(new ErrorHandler("Please upload Attachments",400)) ;
-if(files.length>5) return next(new ErrorHandler("Files can not be more than 5 ",400))
+  if (files.length < 1)
+    return next(new ErrorHandler("Please upload Attachments", 400));
+  if (files.length > 5)
+    return next(new ErrorHandler("Files can not be more than 5 ", 400));
 
   const [chat, me] = await Promise.all([
     Chat.findById(chatId),
