@@ -7,6 +7,7 @@ import { Chat } from "../models/chat.js";
 import { Request } from "../models/request.js";
 import { NEW_REQUEST } from "../constants/events.js";
 import { getOtherMembers } from "../lib/helper.js";
+import { uploadFilesToCloudinary } from "../utils/features.js";
 
 // create a new user and save it to database and save it in cookie
 const newUser = tryCatch(async (req, res, next) => {
@@ -15,9 +16,10 @@ const newUser = tryCatch(async (req, res, next) => {
   const file = req.file;
 
   if (!file) return next(new ErrorHandler("Please upload avatar"));
+  const result = await uploadFilesToCloudinary([file]);
   const avatar = {
-    public_id: "sdfs",
-    url: "asdfa",
+    public_id: result[0].public_id,
+    url: result[0].url,
   };
   const user = await User.create({
     name,

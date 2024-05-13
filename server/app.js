@@ -5,11 +5,14 @@ import { errorMiddleware } from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 import { createServer } from "http";
+import {v2 as cloudinary} from 'cloudinary'
+
 import userRoutes from "./routes/user.js";
 import chatRoutes from "./routes/chat.js";
 import adminRoute from "./routes/admin.js";
 import { NEW_MESSAGE } from "./constants/events.js";
 import { v4 as uuid } from "uuid";
+import cors from "cors"
 import { Message } from "./models/message.js";
 // import {  createUser } from "./seeders/user.js";
 // import { createGroupChats, createMessages, createMessagesInAChat, createSingleChats } from "./seeders/chat.js";
@@ -22,10 +25,15 @@ const mongoURI = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
 
 const envMode = process.env.NODE_ENV.trim() || "PRODUCTION";
-const adminSecretKey = process.env.ADMIN_SECRET_KEY || "ijhew98hgohggffw";
+const adminSecretKey = process.env.ADMIN_SECRET_KEY ;
 const userSocketIDs = new Map();
 
 connectDB(mongoURI);
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret :process.env.CLOUDINARY_API_SECRET,
+});
 
 // createMessagesInAChat("660d9ac85ee3a26b42e3c6d6",50)
 
@@ -37,10 +45,14 @@ const io = new Server(server, {});
 
 app.use(express.json()); //used to extract data from req.body (basically destturing)
 app.use(cookieParser()); // to access the cookie of the logged in user
+app.use(cors({
+  origin:["http://localhost:5173","http://localhost:4173",process.env.CLIENT_URL],
+  credentials: true,
+}))
 
-app.use("/user", userRoutes);
-app.use("/chat", chatRoutes);
-app.use("/admin", adminRoute);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/chat", chatRoutes);
+app.use("/api/v1/admin", adminRoute);
 
 app.get("/", (req, res) => {
   res.send(console.log("hello jiii"));
